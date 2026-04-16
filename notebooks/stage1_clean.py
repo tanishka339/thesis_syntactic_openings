@@ -1,0 +1,71 @@
+import pandas as pd
+import gzip
+import json
+import os 
+
+import langdetect
+BASE_DIR = r"C:\Users\tpasumarthi\thesis_syntactic_openings"
+DATA_DIR = os.path.join(BASE_DIR, "00_data")
+OUT_DIR = os.path.join(BASE_DIR, "01_processed")
+BOOKS_FILE = os.path.join(DATA_DIR, "Books_5.json.gz")
+ELECTRONICS_FILE = os.path.join(DATA_DIR, "Electronics_5.json.gz")
+
+MIN_REVIEW_WORDS = 5
+MIN_HELPFUL_VOTES = 1
+SAMPLE_SIZE = 50000
+RANDOM_SEED = 42
+
+def load_raw(filepath, domain):
+    print(f"Loading {domain} from {filepath} ...")
+    records = []
+    with gzip.open(filepath, "rb") as f: 
+        for line in f: 
+            records.append(json.loads(line))
+    df = pd.DataFrame(records)
+    print(f"  Loaded {len(df)} reviews.")
+    return df
+
+#filter 1 - length filter
+def filter_length(df, domain, log):
+    before = len(df)
+    df = df[df["reviewText"].notna()]
+    df = df[df["reviewText"].str.split().str.len() >= MIN_REVIEW_WORDS]
+    after = len(df)
+    log.append(f"[{domain}] Length filter: {before - after} removed, {after} remaining.")
+    return df
+
+#filter 2 - helpfulness vote filter
+def filter_helpfulness(df, domain, log):
+    before = len(df)
+    df["vote"] = pd.to_numeric(df["vote"], errors="coerce")
+    df = df[df["vote"] >= MIN_HELPFUL_VOTES]
+    after = len(df)
+    log.append(f"[{domain}] Helpfulness filter: {before - after} removed, {after} remaining.")
+    return df
+
+#filter 3 - language filter
+def filter_language(df, domain, log):
+    before = len(df)
+    def is_english(text):
+        try:
+            return langdetect.detect(text) == "en"
+        except:
+            return False
+    df = df[df["reviewText"].apply(is_english)]
+    after = len(df)
+    log.append(f"[{domain}] Language filter: {before - after} removed, {after} remaining.")
+    return df
+
+def sample_corpus(df, domain, log):
+    before = len(df)
+    if before <= SAMPLE_SIZE:
+        log.append(f"[{domain}] Sampling: only {before} reviews available, keeping all.")
+        return df
+    df = df.groupby("overall", group_keys=False).apply(
+        lambda x: x.sample(frac=SAMPLE_SIZE/before, random_state=RANDOM_SEED)
+        ).head(SAMPLE_SIZE)
+    log.append(f"[{domain}] Sampling: {before} -> {len(df)} reviews sampled.")
+    return df
+    
+
+
