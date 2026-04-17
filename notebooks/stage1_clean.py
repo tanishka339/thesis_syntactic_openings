@@ -22,6 +22,7 @@ def load_raw(filepath, domain):
         for line in f: 
             records.append(json.loads(line))
     df = pd.DataFrame(records)
+    df = df.head(10000)  # TEST ONLY - remove before full run    
     print(f"  Loaded {len(df)} reviews.")
     return df
 
@@ -67,5 +68,30 @@ def sample_corpus(df, domain, log):
     log.append(f"[{domain}] Sampling: {before} -> {len(df)} reviews sampled.")
     return df
     
+def process_domain(filepath, domain):
+    log = []
+    df = load_raw(filepath, domain)
+    df = filter_length(df, domain, log)
+    df = filter_helpfulness(df, domain, log)
+    df = filter_language(df, domain, log)
+    df = sample_corpus(df, domain, log)
+    df["domain"] = domain
+    return df, log
 
+def main():
+    os.makedirs(OUT_DIR, exist_ok=True)
+    books_df, books_log = process_domain(BOOKS_FILE, "Books")
+    elec_df, elec_log = process_domain(ELECTRONICS_FILE, "Electronics")
+    corpus = pd.concat([books_df, elec_df], ignore_index=True)
+    out_path = os.path.join(OUT_DIR, "corpus.parquet")
+    corpus.to_parquet(out_path, index=False)
+    print(f"Saved corpus to {out_path} ({len(corpus)} rows).")
+    all_logs = books_log + elec_log
+    log_path = os.path.join(OUT_DIR, "filtering_log.txt")
+    with open(log_path, "w") as f:
+        f.write("\n".join(all_logs))
+    print(f"Saved filtering log to {log_path}.")
+if __name__ == "__main__":
+    main()
+    
 
