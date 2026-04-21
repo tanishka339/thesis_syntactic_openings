@@ -1,0 +1,8 @@
+[Books] Length filter: 6062 removed, 53938 remaining.
+[Books] Helpfulness filter: 44252 removed, 9686 remaining.
+[Books] Language filter: 0 removed, 9686 remaining.
+[Books] Sampling: 9686 -> 4999 reviews sampled.
+[Electronics] Length filter: 8695 removed, 51305 remaining.
+[Electronics] Helpfulness filter: 41064 removed, 10241 remaining.
+[Electronics] Language filter: 0 removed, 10241 remaining.
+[Electronics] Sampling: 10241 -> 5000 reviews sampled.
