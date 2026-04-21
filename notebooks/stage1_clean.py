@@ -17,7 +17,7 @@ RANDOM_SEED = 42
 def load_raw(filepath, domain):
     print(f"Loading {domain} from {filepath} ...")
     records = []
-    limit = 20000
+    limit = 60000
     with gzip.open(filepath, "rb") as f:
         for line in f:
             records.append(json.loads(line))
