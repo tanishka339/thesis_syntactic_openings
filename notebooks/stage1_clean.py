@@ -3,7 +3,6 @@ import gzip
 import json
 import os 
 
-import langdetect
 BASE_DIR = r"C:\Users\tpasumarthi\thesis_syntactic_openings"
 DATA_DIR = os.path.join(BASE_DIR, "00_data")
 OUT_DIR = os.path.join(BASE_DIR, "01_processed")
@@ -12,17 +11,19 @@ ELECTRONICS_FILE = os.path.join(DATA_DIR, "Electronics_5.json.gz")
 
 MIN_REVIEW_WORDS = 5
 MIN_HELPFUL_VOTES = 1
-SAMPLE_SIZE = 50000
+SAMPLE_SIZE = 5000
 RANDOM_SEED = 42
 
 def load_raw(filepath, domain):
     print(f"Loading {domain} from {filepath} ...")
     records = []
-    with gzip.open(filepath, "rb") as f: 
-        for line in f: 
+    limit = 20000
+    with gzip.open(filepath, "rb") as f:
+        for line in f:
             records.append(json.loads(line))
-    df = pd.DataFrame(records)
-    df = df.head(10000)  # TEST ONLY - remove before full run    
+            if len(records) >= limit:
+                break
+    df = pd.DataFrame(records)   
     print(f"  Loaded {len(df)} reviews.")
     return df
 
@@ -44,14 +45,14 @@ def filter_helpfulness(df, domain, log):
     log.append(f"[{domain}] Helpfulness filter: {before - after} removed, {after} remaining.")
     return df
 
-#filter 3 - language filter
+#filter 3 - language filter (fast ASCII ratio method)
 def filter_language(df, domain, log):
     before = len(df)
     def is_english(text):
-        try:
-            return langdetect.detect(text) == "en"
-        except:
+        if not isinstance(text, str) or len(text) == 0:
             return False
+        ascii_chars = sum(1 for c in text if ord(c) < 128)
+        return ascii_chars / len(text) > 0.90
     df = df[df["reviewText"].apply(is_english)]
     after = len(df)
     log.append(f"[{domain}] Language filter: {before - after} removed, {after} remaining.")
