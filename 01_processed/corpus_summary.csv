@@ -1,0 +1,3 @@
+domain,n_reviews,mean_words,median_words,mean_rating,mean_votes
+Books,4999,215.72,148.0,3.8,10.4
+Electronics,5000,155.7,108.0,4.0,12.65
