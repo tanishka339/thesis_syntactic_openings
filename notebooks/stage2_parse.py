@@ -96,10 +96,24 @@ for i in range(3):
     print(f"TEXT: {df['opening'].iloc[i]}")
     print(f"TREE: {df['parse_tree'].iloc[i]}")
 
+df['first_pos'] = df['pos_tags'].apply(lambda x: x[0])
+
+df['has_1pp'] = df['opening'].apply(lambda x: any(w in x.lower().split() for w in ['i', 'me', 'my', 'mine', 'we', 'our', 'us']))
+
+df['has_imp'] = df['opening'].apply(lambda x: any(w in x.lower().split() for w in ['this', 'that', 'these', 'those']))
+
+df['constituency_root'] = df['parse_tree'].apply(lambda x: x.split('(')[1].split()[0] if x else None)
+
+print("\n=== Derived Features ===")
+print(f"first_pos value counts (top 5):\n{df['first_pos'].value_counts().head()}")
+print(f"\nhas_1pp: {df['has_1pp'].sum()} reviews ({df['has_1pp'].mean()*100:.1f}%)")
+print(f"has_imp: {df['has_imp'].sum()} reviews ({df['has_imp'].mean()*100:.1f}%)")
+print(f"\nconstituency_root value counts:\n{df['constituency_root'].value_counts()}")
+
 output_cols = ['reviewerID', 'asin', 'reviewText', 'overall', 'vote',
                'domain', 'opening',
                'open_5w', 'open_sent', 'open_10w',
-               'pos_tags', 'dep_labels', 'head_indices', 'parse_tree']
+               'pos_tags', 'dep_labels', 'head_indices', 'parse_tree', 'first_pos', 'has_1pp', 'has_imp', 'constituency_root']
 
 df_out = df[output_cols]
 output_path = r'C:\Users\tpasumarthi\thesis_syntactic_openings\02_openings\parsed_openings.parquet'
