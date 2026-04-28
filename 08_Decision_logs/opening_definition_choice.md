@@ -20,9 +20,9 @@ Three candidate opening definitions were evaluated on the 5,000-review developme
 
 ## Decision
 
-Primary definition: **First 5 words (Definition A)**
+Primary definition: **First 10 words (Definition C)**
 
-Status: **Working definition — pending Prof. Mora confirmation**
+Status: **Confirmed by Prof. Mora**
 
 ## Rationale
 
