@@ -38,8 +38,8 @@ print(df['len_sent'].describe())
 print("\nFirst 10 words:")
 print(df['len_10w'].describe())
 
-df['opening'] = df['open_5w']
-print(f"\nPrimary opening set to: first 5 words")
+df['opening'] = df['open_10w']
+print(f"\nPrimary opening set to: first 10 words")
 print(f"Example: {df['opening'].iloc[0]}")
 
 print("\nLoading spaCy model...")
