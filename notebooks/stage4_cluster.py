@@ -159,3 +159,63 @@ k=8 selected because:
 with open(log_dir / "k_choice.md", "w", encoding="utf-8") as f:
     f.write(log_text)
 print("Saved: k_choice.md")
+
+#Section 12: Final KMeans with k=8
+final_k = 8
+km_final = KMeans(n_clusters=final_k, n_init=10, random_state=42)
+final_labels = km_final.fit_predict(X)
+print(f"Final clustering: k={final_k}")
+print(f"Cluster sizes:")
+for c in range(final_k):
+    count = np.sum(final_labels == c)
+    print(f"  Cluster {c}: {count} reviews ({count/len(final_labels)*100:.1f}%)")
+
+#Section 13: Sample openings per cluster
+templates_df = pd.read_parquet(base / "04_templates" / "openings_with_templates.parquet")
+templates_df["cluster"] = final_labels
+
+np.random.seed(42)
+for c in range(final_k):
+    cluster_rows = templates_df[templates_df["cluster"] == c]
+    sample = cluster_rows.sample(n=25, random_state=42)
+    print(f"\n{'='*60}")
+    print(f"CLUSTER {c} — {len(cluster_rows)} reviews")
+    print(f"{'='*60}")
+    for _, row in sample.iterrows():
+        print(f"  {row['open_10w']}")
+
+#Section 14: Cluster name mapping + final outputs
+cluster_names = {
+    0: "Product Reference",
+    1: "Acquisition Narrative",
+    2: "Evaluative Positioning",
+    3: "Direct Evaluation",
+    4: "Specific Identification",
+    5: "Affective Stance",
+    6: "Contextual Framing",
+    7: "Terse Evaluation"
+}
+
+templates_df["cluster_name"] = templates_df["cluster"].map(cluster_names)
+
+taxonomy_dir = base / "07_taxonomy"
+taxonomy_dir.mkdir(exist_ok=True)
+
+templates_df.to_parquet(taxonomy_dir / "final_classes.parquet", index=False)
+print(f"Saved: final_classes.parquet ({len(templates_df)} rows)")
+
+taxonomy_rows = []
+for c in range(final_k):
+    count = np.sum(final_labels == c)
+    taxonomy_rows.append({
+        "cluster_id": c,
+        "cluster_name": cluster_names[c],
+        "count": count,
+        "percentage": round(count / len(final_labels) * 100, 1)
+    })
+
+taxonomy_table = pd.DataFrame(taxonomy_rows)
+taxonomy_table.to_csv(taxonomy_dir / "taxonomy_table.csv", index=False)
+print("\nTaxonomy Table:")
+print(taxonomy_table.to_string(index=False))
+print("\nSaved: taxonomy_table.csv")
