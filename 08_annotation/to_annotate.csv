@@ -1,36 +1,36 @@
 reviewerID,asin,domain,open_10w,cluster,cluster_name,manual_label,confidence
-A37OT4OR6ANJVW,000226157X,Books,This is most probably my last Jack Higgins novel. There,5,Affective Stance,,
-AAC9G2LU25PBG,0001844423,Books,This is a beautiful paperback box set of the Narnia,6,Contextual Framing,,
-A3LAQSHW9IVKUO,0002005263,Books,"Typical Hillerman, the only mystery set in modern day- series",4,Specific Identification,,
-A1EACAPTW9KTJF,0002255863,Books,"There's really not much more to say beyond what's said,",5,Affective Stance,,
-AB442YVDP2VKX,0006166032,Books,I started the Aubrey/Maturin series with an audiobook version of,1,Acquisition Narrative,,
-A11J09ZEKKH71R,0006276628,Books,This book is one of the best books I've read,6,Contextual Framing,,
-A78R8AL1YN6SM,0002247399,Books,**Spoiler Alert** It is one thing to intermittently kill off,7,Terse Evaluation,,
-A3O68LUHM7OFJ,0002247399,Books,George R. R. Martin is a brilliant writer and he,4,Specific Identification,,
-A1ORZ2ZH5MIZCG,0002558173,Books,This book not only compliments the early Sharpe series of,1,Acquisition Narrative,,
-A32J48LYJ2BNNY,0002180618,Books,This is the book that started it all. I was,3,Direct Evaluation,,
-AL48AYYF254TV,0002232618,Books,I found this book delightful from beginning to end. Her,0,Product Reference,,
-A1RAUVCWYHTQI4,000215725X,Books,A really wonderful book about the city of Delhi. Dalrymple,0,Product Reference,,
-A1BAHT46HPEVH1,0004723724,Books,Oscar Wilde can turn a phrase and write a double,2,Evaluative Positioning,,
-A2Z4WO6M9NQOLB,000215725X,Books,"This book concerns the year Dalrymple spends in Delhi, attempting",0,Product Reference,,
-A3I804Y6PB1KS3,0002232618,Books,"I kept reading this novel, hoping that the conclusion would",2,Evaluative Positioning,,
-A20UTBMNQ9T4YH,0006152465,Books,This was the first fantasy series I ever read. This,3,Direct Evaluation,,
-A3G2JYXEW059CY,0002005263,Books,"For years, Tony Hillerman has been giving us wonderful plots,",7,Terse Evaluation,,
-A14DZ9B1A3LBX2,0001713256,Books,I don't know why this book has flown under the,6,Contextual Framing,,
-AI5OR1HSYXCCL,0002171856,Books,Overall this is a great book. Not just for survival,3,Direct Evaluation,,
-A38XYGOWUGJ4T9,000215949X,Books,As my husband and I have a predelection for fine,1,Acquisition Narrative,,
-A36HYPXFVKJMK6,0001844423,Books,Every time I read these books I get more out,1,Acquisition Narrative,,
-A1QHT4FS6DIQ9D,0002259753,Books,I had high hopes for this book. Other Oprah Picks,0,Product Reference,,
-A3INMG0EM4BL7H,0002158663,Books,The typical Newby humour is complimented by the deep emotions,6,Contextual Framing,,
-ALH5ICRHO43PV,0006064922,Books,Bought for my Husband who had a hard time reading,1,Acquisition Narrative,,
-A3K0WKAHE5YU9W,0006064922,Books,"For me, it is not hard to read and renders",5,Affective Stance,,
-A1CHOKV10NEI8X,0001048767,Books,But the man pretending to be wise is the fool,2,Evaluative Positioning,,
-A1F7CMDX6QDJVA,0001844423,Books,This well-loved fantasy tale by C.S. Lewis is a passport,0,Product Reference,,
-AD1F3U9TEOAAQ,0002247399,Books,"I looked forward to reading Book 5, A Dance with",1,Acquisition Narrative,,
-A3OJAU6GVTM6E1,0002726874,Books,While I agree with the reviewer who criticized the soapbox,1,Acquisition Narrative,,
-AEJII3GASJ86T,0001720392,Books,I recently purchased this book (hardcover) for my 2 year,0,Product Reference,,
-A1G9UEWALDT9JI,0002261596,Books,I found Hell at the Breech on the sale table,1,Acquisition Narrative,,
-ALT4IYVHVIJIH,0002213311,Books,"I had to force myself to read this book, which",0,Product Reference,,
+A37OT4OR6ANJVW,000226157X,Books,This is most probably my last Jack Higgins novel. There,5,Affective Stance,Evaluative Positioning ,Medium
+AAC9G2LU25PBG,0001844423,Books,This is a beautiful paperback box set of the Narnia,6,Contextual Framing,Product Reference,High
+A3LAQSHW9IVKUO,0002005263,Books,"Typical Hillerman, the only mystery set in modern day- series",4,Specific Identification,Terse Evaluation,Medium
+A1EACAPTW9KTJF,0002255863,Books,"There's really not much more to say beyond what's said,",5,Affective Stance,Evaluative Positioning ,High
+AB442YVDP2VKX,0006166032,Books,I started the Aubrey/Maturin series with an audiobook version of,1,Acquisition Narrative,Acquisition Narrative,High
+A11J09ZEKKH71R,0006276628,Books,This book is one of the best books I've read,6,Contextual Framing,Direct Evaluation,High
+A78R8AL1YN6SM,0002247399,Books,**Spoiler Alert** It is one thing to intermittently kill off,7,Terse Evaluation,Evaluative Positioning ,Medium
+A3O68LUHM7OFJ,0002247399,Books,George R. R. Martin is a brilliant writer and he,4,Specific Identification,Direct Evaluation,Medium
+A1ORZ2ZH5MIZCG,0002558173,Books,This book not only compliments the early Sharpe series of,1,Acquisition Narrative,Evaluative Positioning ,Medium
+A32J48LYJ2BNNY,0002180618,Books,This is the book that started it all. I was,3,Direct Evaluation,Product Reference,High
+AL48AYYF254TV,0002232618,Books,I found this book delightful from beginning to end. Her,0,Product Reference,Direct Evaluation,High
+A1RAUVCWYHTQI4,000215725X,Books,A really wonderful book about the city of Delhi. Dalrymple,0,Product Reference,Tearse Evaluation,Medium
+A1BAHT46HPEVH1,0004723724,Books,Oscar Wilde can turn a phrase and write a double,2,Evaluative Positioning,Direct Evaluation,Medium
+A2Z4WO6M9NQOLB,000215725X,Books,"This book concerns the year Dalrymple spends in Delhi, attempting",0,Product Reference,Contextual Framing,High
+A3I804Y6PB1KS3,0002232618,Books,"I kept reading this novel, hoping that the conclusion would",2,Evaluative Positioning,Evaluative Positioning ,High
+A20UTBMNQ9T4YH,0006152465,Books,This was the first fantasy series I ever read. This,3,Direct Evaluation,Contextual Framing,High
+A3G2JYXEW059CY,0002005263,Books,"For years, Tony Hillerman has been giving us wonderful plots,",7,Terse Evaluation,Contextual Framing,High
+A14DZ9B1A3LBX2,0001713256,Books,I don't know why this book has flown under the,6,Contextual Framing,Evaluative Positioning ,High
+AI5OR1HSYXCCL,0002171856,Books,Overall this is a great book. Not just for survival,3,Direct Evaluation,Direct Evaluation,High
+A38XYGOWUGJ4T9,000215949X,Books,As my husband and I have a predelection for fine,1,Acquisition Narrative,Contextual Framing,Medium
+A36HYPXFVKJMK6,0001844423,Books,Every time I read these books I get more out,1,Acquisition Narrative,Contextual Framing,Medium
+A1QHT4FS6DIQ9D,0002259753,Books,I had high hopes for this book. Other Oprah Picks,0,Product Reference,Affective Stance,High
+A3INMG0EM4BL7H,0002158663,Books,The typical Newby humour is complimented by the deep emotions,6,Contextual Framing,Contextual Framing,Medium
+ALH5ICRHO43PV,0006064922,Books,Bought for my Husband who had a hard time reading,1,Acquisition Narrative,Acquisition Narrative,High
+A3K0WKAHE5YU9W,0006064922,Books,"For me, it is not hard to read and renders",5,Affective Stance,Contextual Framing,Medium
+A1CHOKV10NEI8X,0001048767,Books,But the man pretending to be wise is the fool,2,Evaluative Positioning,Evaluative Positioning ,Medium
+A1F7CMDX6QDJVA,0001844423,Books,This well-loved fantasy tale by C.S. Lewis is a passport,0,Product Reference,Product Reference ,High
+AD1F3U9TEOAAQ,0002247399,Books,"I looked forward to reading Book 5, A Dance with",1,Acquisition Narrative,Affective Stance,High
+A3OJAU6GVTM6E1,0002726874,Books,While I agree with the reviewer who criticized the soapbox,1,Acquisition Narrative,Evaluative Positioning ,High
+AEJII3GASJ86T,0001720392,Books,I recently purchased this book (hardcover) for my 2 year,0,Product Reference,Acquisition Narrative,High
+A1G9UEWALDT9JI,0002261596,Books,I found Hell at the Breech on the sale table,1,Acquisition Narrative,Acqusition Narrative,High
+ALT4IYVHVIJIH,0002213311,Books,"I had to force myself to read this book, which",0,Product Reference,Affective Stance,Medium
 A1WUXJN2C7FPB2,0002247399,Books,Only got through the first 800 pages then returned it,1,Acquisition Narrative,,
 A2RB1C3XAA57CL,0006160794,Books,Wow what a great adventure You will not be able,6,Contextual Framing,,
 A3QWNQ2WA7QZYJ,0006172768,Books,Beginner's luck. This is Clancy's first book and probably his,7,Terse Evaluation,,
