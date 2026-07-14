@@ -1,0 +1,4 @@
+Cohen's kappa: 0.1812
+
+Interpretation (Landis & Koch, 1977):
+Slight or poor agreement
