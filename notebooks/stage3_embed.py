@@ -2,8 +2,10 @@ import pandas as pd
 import re
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from pathlib import Path
+base = Path(__file__).resolve().parent.parent
 
-df = pd.read_parquet(r"C:\Users\tpasumarthi\thesis_syntactic_openings\02_openings\parsed_openings.parquet")
+df = pd.read_parquet(base / "02_openings" / "parsed_openings.parquet")
 print(f"Loaded {len(df)} rows, {len(df.columns)} columns")
 print(df["parse_tree"].iloc[0])
 
@@ -52,19 +54,19 @@ print("Encoding POS sequences...")
 embeddings = model.encode(pos_sequences.tolist(), show_progress_bar=True, batch_size=64)
 print(f"Embeddings shape: {embeddings.shape}")
 
-np.save(r"C:\Users\tpasumarthi\thesis_syntactic_openings\05_embeddings\embeddings.npy", embeddings)
+np.save(base / "05_embeddings" / "embeddings.npy", embeddings)
 print(f"Saved embeddings to 05_embeddings/embeddings.npy")
 
-df.to_parquet(r"C:\Users\tpasumarthi\thesis_syntactic_openings\04_templates\openings_with_templates.parquet", index=False)
+df.to_parquet(base / "04_templates" / "openings_with_templates.parquet", index=False)
 print(f"Saved dataframe with templates to 04_templates/openings_with_templates.parquet")
 print(f"Final dataframe: {len(df)} rows, {len(df.columns)} columns")
 
-df[["reviewerID"]].to_csv(r"C:\Users\tpasumarthi\thesis_syntactic_openings\05_embeddings\index.csv", index=False)
+df[["reviewerID"]].to_csv(base / "05_embeddings" / "index.csv", index=False)
 print("Saved index.csv")
 
 top_templates = df["coarse_template"].value_counts().head(50).reset_index()
 top_templates.columns = ["coarse_template", "count"]
-top_templates.to_csv(r"C:\Users\tpasumarthi\thesis_syntactic_openings\04_templates\top_templates.csv", index=False)
+top_templates.to_csv(base / "04_templates" / "top_templates.csv", index=False)
 print("Saved top_templates.csv")
 
 from sklearn.metrics.pairwise import cosine_similarity
@@ -82,7 +84,7 @@ for idx in sample_indices:
         print(f"  Neighbour {rank} (sim={sims[nb]:.3f}): {df['coarse_template'].iloc[nb]}")
         print(f"    POS: {df['pos_tags'].iloc[nb]}")
 
-with open(r"C:\Users\tpasumarthi\thesis_syntactic_openings\05_embeddings\nearest_neighbour_check.txt", "w") as f:
+with open(base / "05_embeddings" / "nearest_neighbour_check.txt", "w") as f:
     for idx, top3 in results:
         f.write(f"\nOpening {idx}: {df['coarse_template'].iloc[idx]}\n")
         f.write(f"  POS: {df['pos_tags'].iloc[idx]}\n")

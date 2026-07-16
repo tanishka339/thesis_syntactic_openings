@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 #Section 2: Load Embeddings + Index
-base = Path(r"C:\Users\tpasumarthi\thesis_syntactic_openings")
+base = Path(__file__).resolve().parent.parent
 embed_dir = base / "05_embeddings"
 cluster_dir = base / "06_clusters"
 cluster_dir.mkdir(exist_ok=True)

@@ -1,0 +1,14 @@
+,coef,IRR,IRR_low,IRR_high,p_value
+Intercept,-0.208,0.8122,0.6888,0.9577,0.0133
+C(domain)[T.Electronics],0.3292,1.3898,1.3318,1.4504,0.0
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Acquisition Narrative]",0.0194,1.0196,0.9428,1.1026,0.6275
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Affective Stance]",-0.1555,0.856,0.7932,0.9238,0.0001
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Contextual Framing]",0.0131,1.0131,0.9436,1.0878,0.719
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Evaluative Positioning]",-0.1278,0.8801,0.8069,0.9598,0.0039
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Product Reference]",0.0061,1.0061,0.9363,1.081,0.8686
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Specific Identification]",-0.1045,0.9007,0.8317,0.9755,0.0102
+"C(cluster_label, Treatment(reference=""Direct Evaluation""))[T.Terse Evaluation]",0.0437,1.0446,0.9637,1.1324,0.2887
+log_wc,0.5357,1.7086,1.6698,1.7482,0.0
+overall,-0.39,0.6771,0.6186,0.741,0.0
+star_sq,0.0538,1.0552,1.0407,1.07,0.0
+log_exp,0.4611,1.5858,1.4868,1.6914,0.0
