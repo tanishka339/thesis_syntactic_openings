@@ -1,0 +1,10 @@
+cluster_id,cluster_name,n_reviews,pct_of_total,mean_word_count,median_word_count,mean_star_rating,median_star_rating,mean_helpful_votes,median_helpful_votes,sd_helpful_votes,max_helpful_votes
+ALL,TOTAL SAMPLE,9999,100.0,185.7,125.0,3.9,5.0,11.53,4.0,30.62,643
+0,Product Reference,1387,13.9,179.2,115.0,3.89,5.0,12.18,4.0,33.61,593
+1,Acquisition Narrative,1060,10.6,178.9,130.0,3.9,4.0,12.29,4.0,34.66,643
+2,Evaluative Positioning,807,8.1,180.4,128.0,3.65,4.0,10.19,4.0,25.57,474
+3,Direct Evaluation,2142,21.4,173.7,116.0,3.9,4.5,11.38,4.0,29.54,539
+4,Specific Identification,1012,10.1,243.0,180.0,4.06,5.0,12.23,5.0,29.77,449
+5,Affective Stance,1169,11.7,183.6,125.0,3.96,5.0,10.22,4.0,25.14,552
+6,Contextual Framing,1434,14.3,184.0,127.0,3.94,5.0,11.73,4.0,29.72,468
+7,Terse Evaluation,988,9.9,178.7,109.0,3.84,5.0,11.72,4.0,35.42,629

@@ -1,0 +1,43 @@
+
+==============================================================================
+STAGE 4 — CLUSTER OUTPUT REPORT
+==============================================================================
+corpus   : 9,999 rows x 18 cols  <- 02_openings\parsed_openings.parquet
+taxonomy : 9,999 rows x 22 cols  <- 07_taxonomy\final_classes.parquet
+shared key 'reviewerID' is not unique — falling back to row order
+no shared id column — aligning by row order (counts match)
+word_count not found — computed from review text
+
+9,999 reviews across 8 clusters
+
+==============================================================================
+1. SAMPLE REVIEWS PER CLUSTER
+==============================================================================
+  -> 07_taxonomy\sample_reviews_per_cluster.csv
+  -> 07_taxonomy\sample_reviews_per_cluster.md
+
+==============================================================================
+BASIC STATISTICS — TOTAL SAMPLE, THEN CLUSTERS
+==============================================================================
+cluster_id            cluster_name  n_reviews  pct_of_total  mean_word_count  median_word_count  mean_star_rating  mean_helpful_votes  median_helpful_votes
+       ALL            TOTAL SAMPLE       9999         100.0            185.7              125.0              3.90               11.53                   4.0
+         0       Product Reference       1387          13.9            179.2              115.0              3.89               12.18                   4.0
+         1   Acquisition Narrative       1060          10.6            178.9              130.0              3.90               12.29                   4.0
+         2  Evaluative Positioning        807           8.1            180.4              128.0              3.65               10.19                   4.0
+         3       Direct Evaluation       2142          21.4            173.7              116.0              3.90               11.38                   4.0
+         4 Specific Identification       1012          10.1            243.0              180.0              4.06               12.23                   5.0
+         5        Affective Stance       1169          11.7            183.6              125.0              3.96               10.22                   4.0
+         6      Contextual Framing       1434          14.3            184.0              127.0              3.94               11.73                   4.0
+         7        Terse Evaluation        988           9.9            178.7              109.0              3.84               11.72                   4.0
+
+  -> 07_taxonomy\cluster_statistics.csv
+
+==============================================================================
+2. DISTRIBUTION PLOTS
+==============================================================================
+  -> 06_clusters\cluster_distributions_overlay.png
+  -> 06_clusters\cluster_distributions_by_class.png
+
+==============================================================================
+DONE
+==============================================================================
