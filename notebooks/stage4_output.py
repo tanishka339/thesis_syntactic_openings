@@ -424,6 +424,140 @@ def plots(df, cols, out_dir: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# 7. Comparison curves — KDE, radar, and grouped bar
+# ---------------------------------------------------------------------------
+
+def comparison_curves(df, cols, stats: pd.DataFrame, out_dir: Path) -> None:
+    """Three additional figures that make cluster differences visually obvious."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cluster_ids = sorted(df[cols["cluster"]].unique())
+    names = {c: df.loc[df[cols["cluster"]] == c, cols["clustnm"]].iloc[0]
+             for c in cluster_ids}
+    palette = plt.cm.tab10(np.linspace(0, 1, 10))[:len(cluster_ids)]
+    wcap, vcap = CONFIG["wordcount_cap"], CONFIG["votes_cap"]
+
+    # ── Figure 3: KDE density curves ─────────────────────────────────────
+    fig, ax = plt.subplots(1, 3, figsize=(18, 5))
+
+    for i, c in enumerate(cluster_ids):
+        sub = df[df[cols["cluster"]] == c]
+
+        # Star rating — discrete, so use narrow KDE bandwidth
+        vals = sub[cols["rating"]].dropna()
+        if len(vals) > 2:
+            from scipy.stats import gaussian_kde
+            xs = np.linspace(vals.min() - 0.5, vals.max() + 0.5, 200)
+            kde = gaussian_kde(vals, bw_method=0.3)
+            ax[0].plot(xs, kde(xs), color=palette[i], linewidth=2,
+                       label=f"{c}: {names[c]}")
+
+        # Word count
+        wvals = sub[cols["words"]].dropna().clip(upper=wcap)
+        if len(wvals) > 2:
+            xs = np.linspace(0, wcap, 300)
+            kde = gaussian_kde(wvals, bw_method="scott")
+            ax[1].plot(xs, kde(xs), color=palette[i], linewidth=2)
+
+        # Helpfulness votes
+        vvals = sub[cols["votes"]].dropna().clip(upper=vcap)
+        if len(vvals) > 2:
+            xs = np.linspace(0, vcap, 300)
+            kde = gaussian_kde(vvals, bw_method="scott")
+            ax[2].plot(xs, kde(xs), color=palette[i], linewidth=2)
+
+    ax[0].set_xlabel("Star Rating")
+    ax[0].set_ylabel("Density")
+    ax[0].set_title("Star Rating — KDE by Cluster")
+    ax[1].set_xlabel(f"Word Count (capped at {wcap})")
+    ax[1].set_ylabel("Density")
+    ax[1].set_title("Review Length — KDE by Cluster")
+    ax[2].set_xlabel(f"Helpfulness Votes (capped at {vcap})")
+    ax[2].set_ylabel("Density")
+    ax[2].set_title("Helpfulness Votes — KDE by Cluster")
+
+    for a in ax:
+        a.grid(alpha=0.25)
+        a.set_axisbelow(True)
+
+    fig.legend(*ax[0].get_legend_handles_labels(), loc="lower center",
+               ncol=min(4, len(cluster_ids)), frameon=False, fontsize=9,
+               bbox_to_anchor=(0.5, -0.08))
+    fig.suptitle("Figure 3. Smooth density curves (KDE) by cluster",
+                 y=1.02, fontsize=13)
+    fig.tight_layout()
+    p3 = out_dir / "cluster_kde_curves.png"
+    fig.savefig(p3, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  -> {p3}")
+
+    # ── Figure 4: Radar / spider chart ────────────────────────────────────
+    # Use cluster-level means from the stats table (skip the TOTAL row).
+    cl_stats = stats[stats["cluster_id"] != "ALL"].copy()
+    metrics = ["mean_star_rating", "mean_word_count", "mean_helpful_votes"]
+    metric_labels = ["Mean Star Rating", "Mean Word Count", "Mean Helpful Votes"]
+
+    # Normalise each metric to 0-1 so the radar axes are comparable.
+    normed = cl_stats[metrics].copy()
+    for m in metrics:
+        lo, hi = normed[m].min(), normed[m].max()
+        normed[m] = (normed[m] - lo) / (hi - lo + 1e-9)
+
+    angles = np.linspace(0, 2 * np.pi, len(metrics), endpoint=False).tolist()
+    angles += angles[:1]  # close the polygon
+
+    fig, ax = plt.subplots(figsize=(7, 7), subplot_kw=dict(polar=True))
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_theta_direction(-1)
+    ax.set_thetagrids(np.degrees(angles[:-1]), metric_labels, fontsize=10)
+
+    for idx, (_, row) in enumerate(cl_stats.iterrows()):
+        values = [normed.iloc[idx][m] for m in metrics] + \
+                 [normed.iloc[idx][metrics[0]]]
+        ax.plot(angles, values, color=palette[idx], linewidth=2,
+                label=f"{row['cluster_id']}: {row['cluster_name']}")
+        ax.fill(angles, values, color=palette[idx], alpha=0.10)
+
+    ax.set_ylim(0, 1.1)
+    ax.set_title("Figure 4. Cluster profiles — radar comparison\n(normalised 0–1)",
+                 y=1.12, fontsize=13)
+    ax.legend(loc="lower left", bbox_to_anchor=(-0.25, -0.15),
+              ncol=2, fontsize=8, frameon=False)
+    p4 = out_dir / "cluster_radar_comparison.png"
+    fig.savefig(p4, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  -> {p4}")
+
+    # ── Figure 5: Grouped bar chart of means ──────────────────────────────
+    fig, axes = plt.subplots(1, 3, figsize=(17, 5.5))
+    x = np.arange(len(cl_stats))
+    labels = [f"{r['cluster_id']}: {r['cluster_name']}" for _, r in cl_stats.iterrows()]
+    bar_colors = palette[:len(cl_stats)]
+
+    for ax_i, (metric, label) in enumerate(zip(metrics, metric_labels)):
+        bars = axes[ax_i].bar(x, cl_stats[metric], color=bar_colors, edgecolor="white",
+                              linewidth=0.8)
+        axes[ax_i].set_xticks(x)
+        axes[ax_i].set_xticklabels(labels, rotation=40, ha="right", fontsize=8)
+        axes[ax_i].set_ylabel(label)
+        axes[ax_i].set_title(label)
+        axes[ax_i].grid(axis="y", alpha=0.25)
+        axes[ax_i].set_axisbelow(True)
+
+        # Add value labels on top of each bar
+        for bar in bars:
+            h = bar.get_height()
+            axes[ax_i].text(bar.get_x() + bar.get_width() / 2, h,
+                            f"{h:.1f}", ha="center", va="bottom", fontsize=8)
+
+    fig.suptitle("Figure 5. Mean metrics by cluster", y=1.02, fontsize=13)
+    fig.tight_layout()
+    p5 = out_dir / "cluster_means_comparison.png"
+    fig.savefig(p5, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  -> {p5}")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -451,10 +585,13 @@ def main() -> int:
         banner("1. SAMPLE REVIEWS PER CLUSTER")
         sample_reviews(df, cols, CONFIG["stats_out"], args.n, CONFIG["seed"])
 
-        statistics(df, cols, CONFIG["stats_out"])
+        stats = statistics(df, cols, CONFIG["stats_out"])
 
         banner("2. DISTRIBUTION PLOTS")
         plots(df, cols, CONFIG["plots_out"])
+
+        banner("3. COMPARISON CURVES")
+        comparison_curves(df, cols, stats, CONFIG["plots_out"])
 
         banner("DONE")
         return 0
