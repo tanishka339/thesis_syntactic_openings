@@ -3,7 +3,7 @@
 **A Computational Pipeline for Cross-Domain Register Taxonomy and Helpfulness Analysis**
 
 MSc Data Science Thesis — Tanishka Nath Pasumarthi  
-Charlton College of Business, UMass Dartmouth  
+UMass Dartmouth  
 Advisor: [Prof. José Domingo Mora](mailto:josedomingo.mora@umassd.edu)
 
 ---
