@@ -1,0 +1,4 @@
+metric,H_statistic,p_value,p_formatted,significance,n_groups,total_n
+Star Rating,37.396,3.945418409222779e-06,3.95e-06,***,8,9999
+Word Count,182.612,5.468006318701305e-36,5.47e-36,***,8,9999
+Helpfulness Votes,23.927,0.0011734773648009844,0.0012,**,8,9999

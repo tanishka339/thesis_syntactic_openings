@@ -41,7 +41,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 
 CONFIG = {
-    "corpus_path":   Path("01_processed/corpus.parquet"),
+    "corpus_path":   Path("02_openings/parsed_openings.parquet"),
     "taxonomy_path": Path("07_taxonomy/final_classes.parquet"),
     "stats_out":     Path("07_taxonomy"),
     "plots_out":     Path("06_clusters"),
@@ -558,6 +558,224 @@ def comparison_curves(df, cols, stats: pd.DataFrame, out_dir: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# 8. Heatmap — Cluster × Domain proportions
+# ---------------------------------------------------------------------------
+
+def domain_heatmap(df, cols, out_dir: Path) -> None:
+    """Heatmap showing what % of each cluster comes from each product domain."""
+    if cols["domain"] is None:
+        print("  (skipped — no domain column found)")
+        return
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cluster_ids = sorted(df[cols["cluster"]].unique())
+    names = {c: df.loc[df[cols["cluster"]] == c, cols["clustnm"]].iloc[0]
+             for c in cluster_ids}
+
+    # Build a cross-tab: rows = clusters, columns = domains, values = % of cluster
+    ct = pd.crosstab(df[cols["cluster"]], df[cols["domain"]], normalize="index") * 100
+    ct.index = [f"{c}: {names[c]}" for c in ct.index]
+
+    fig, ax = plt.subplots(figsize=(max(8, len(ct.columns) * 1.2),
+                                    max(4, len(ct) * 0.7)))
+    im = ax.imshow(ct.values, cmap="YlOrRd", aspect="auto")
+
+    ax.set_xticks(range(len(ct.columns)))
+    ax.set_xticklabels(ct.columns, rotation=45, ha="right", fontsize=9)
+    ax.set_yticks(range(len(ct.index)))
+    ax.set_yticklabels(ct.index, fontsize=9)
+
+    # Annotate each cell with the percentage
+    for i in range(len(ct.index)):
+        for j in range(len(ct.columns)):
+            val = ct.values[i, j]
+            color = "white" if val > ct.values.max() * 0.6 else "black"
+            ax.text(j, i, f"{val:.1f}%", ha="center", va="center",
+                    fontsize=8, color=color)
+
+    fig.colorbar(im, ax=ax, label="% of cluster", shrink=0.8)
+    ax.set_title("Figure 6. Domain composition by cluster (%)", fontsize=13, pad=12)
+    fig.tight_layout()
+
+    p = out_dir / "cluster_domain_heatmap.png"
+    fig.savefig(p, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  -> {p}")
+
+    # Also save the raw table as CSV
+    csv_p = out_dir.parent / "07_taxonomy" / "cluster_domain_crosstab.csv"
+    if not csv_p.parent.exists():
+        csv_p = out_dir / "cluster_domain_crosstab.csv"
+    ct.to_csv(csv_p, float_format="%.1f")
+    print(f"  -> {csv_p}")
+
+
+# ---------------------------------------------------------------------------
+# 9. Box plots — spread of each metric by cluster
+# ---------------------------------------------------------------------------
+
+def box_plots(df, cols, out_dir: Path) -> None:
+    """Side-by-side box plots showing median, quartiles, and outliers per cluster."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cluster_ids = sorted(df[cols["cluster"]].unique())
+    names = {c: df.loc[df[cols["cluster"]] == c, cols["clustnm"]].iloc[0]
+             for c in cluster_ids}
+    labels = [f"{c}: {names[c]}" for c in cluster_ids]
+    wcap, vcap = CONFIG["wordcount_cap"], CONFIG["votes_cap"]
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    metrics = [
+        (cols["rating"],  "Star Rating",                        None),
+        (cols["words"],   f"Word Count (capped at {wcap})",     wcap),
+        (cols["votes"],   f"Helpfulness Votes (capped at {vcap})", vcap),
+    ]
+
+    for ax, (col, title, cap) in zip(axes, metrics):
+        data = []
+        for c in cluster_ids:
+            vals = df.loc[df[cols["cluster"]] == c, col].dropna()
+            if cap:
+                vals = vals.clip(upper=cap)
+            data.append(vals.values)
+
+        bp = ax.boxplot(data, patch_artist=True, labels=labels,
+                        showfliers=True, flierprops=dict(marker='.', markersize=3,
+                                                         alpha=0.3))
+        palette = plt.cm.tab10(np.linspace(0, 1, 10))[:len(cluster_ids)]
+        for patch, color in zip(bp["boxes"], palette):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.6)
+
+        ax.set_title(title, fontsize=11)
+        ax.tick_params(axis="x", rotation=40, labelsize=8)
+        ax.grid(axis="y", alpha=0.25)
+        ax.set_axisbelow(True)
+
+    fig.suptitle("Figure 7. Distribution spread by cluster (box plots)",
+                 y=1.02, fontsize=13)
+    fig.tight_layout()
+    p = out_dir / "cluster_box_plots.png"
+    fig.savefig(p, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  -> {p}")
+
+
+# ---------------------------------------------------------------------------
+# 10. Example openings table — 5 real openings per cluster, saved as CSV
+# ---------------------------------------------------------------------------
+
+def example_openings(df, cols, out_dir: Path, n: int = 5, seed: int = 42) -> None:
+    """A table of n real opening sentences per cluster, for qualitative evidence."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Decide which text to show: prefer the opening column, fall back to open_5w
+    open_col = cols["opening"]
+    if open_col is None:
+        # Try open_5w as a fallback
+        candidates = ["open_5w", "open_sent", "open_10w"]
+        for cand in candidates:
+            if cand in df.columns:
+                open_col = cand
+                break
+    if open_col is None:
+        open_col = cols["text"]  # last resort: full review text
+
+    rows = []
+    for cid, grp in df.groupby(cols["cluster"], sort=True):
+        name = grp[cols["clustnm"]].iloc[0]
+        sample = grp.sample(n=min(n, len(grp)), random_state=seed)
+        for rank, (_, r) in enumerate(sample.iterrows(), 1):
+            opening_text = str(r[open_col]).strip()
+            # Truncate if very long
+            if len(opening_text) > 150:
+                opening_text = opening_text[:147] + "..."
+            rows.append({
+                "cluster_id": cid,
+                "cluster_name": name,
+                "example_num": rank,
+                "opening": opening_text,
+                "star_rating": r[cols["rating"]],
+                "domain": r.get(cols["domain"], "") if cols["domain"] else "",
+            })
+
+    table = pd.DataFrame(rows)
+    csv_path = out_dir / "cluster_example_openings.csv"
+    table.to_csv(csv_path, index=False, encoding="utf-8")
+    print(f"  -> {csv_path}")
+
+    # Also print a readable summary to terminal
+    for cid in sorted(df[cols["cluster"]].unique()):
+        sub = table[table["cluster_id"] == cid]
+        name = sub["cluster_name"].iloc[0]
+        print(f"\n  Cluster {cid}: {name}")
+        for _, r in sub.iterrows():
+            print(f"    {r['example_num']}. \"{r['opening']}\"")
+
+
+# ---------------------------------------------------------------------------
+# 11. Statistical significance tests (Kruskal-Wallis)
+# ---------------------------------------------------------------------------
+
+def significance_tests(df, cols, out_dir: Path) -> None:
+    """
+    Kruskal-Wallis H-test for each metric across clusters.
+
+    This is the non-parametric alternative to one-way ANOVA — it does NOT
+    assume the data is normally distributed (star ratings definitely aren't),
+    which makes it the right choice here.
+
+    For each metric it answers: "Is the difference between cluster medians
+    statistically significant, or could it have happened by chance?"
+    A p-value < 0.05 means the difference is very unlikely to be random.
+    """
+    from scipy.stats import kruskal
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cluster_ids = sorted(df[cols["cluster"]].unique())
+
+    metrics = [
+        ("Star Rating",       cols["rating"]),
+        ("Word Count",        cols["words"]),
+        ("Helpfulness Votes", cols["votes"]),
+    ]
+
+    results = []
+    for metric_name, col in metrics:
+        groups = [df.loc[df[cols["cluster"]] == c, col].dropna().values
+                  for c in cluster_ids]
+        # Need at least 2 groups with data
+        groups = [g for g in groups if len(g) > 0]
+        if len(groups) < 2:
+            continue
+
+        stat, pval = kruskal(*groups)
+        sig = "***" if pval < 0.001 else "**" if pval < 0.01 else \
+              "*" if pval < 0.05 else "n.s."
+        results.append({
+            "metric": metric_name,
+            "H_statistic": round(stat, 3),
+            "p_value": pval,
+            "p_formatted": f"{pval:.2e}" if pval < 0.001 else f"{pval:.4f}",
+            "significance": sig,
+            "n_groups": len(groups),
+            "total_n": sum(len(g) for g in groups),
+        })
+
+    res_df = pd.DataFrame(results)
+    csv_path = out_dir / "kruskal_wallis_tests.csv"
+    res_df.to_csv(csv_path, index=False)
+
+    print("\n  Kruskal-Wallis H-test (non-parametric one-way ANOVA)")
+    print("  " + "=" * 65)
+    for _, r in res_df.iterrows():
+        print(f"  {r['metric']:<22s}  H = {r['H_statistic']:>10.3f},  "
+              f"p = {r['p_formatted']:>10s}  {r['significance']}")
+    print("  " + "-" * 65)
+    print("  *** p < .001   ** p < .01   * p < .05   n.s. = not significant")
+    print(f"\n  -> {csv_path}")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -592,6 +810,19 @@ def main() -> int:
 
         banner("3. COMPARISON CURVES")
         comparison_curves(df, cols, stats, CONFIG["plots_out"])
+
+        banner("4. DOMAIN HEATMAP")
+        domain_heatmap(df, cols, CONFIG["plots_out"])
+
+        banner("5. BOX PLOTS")
+        box_plots(df, cols, CONFIG["plots_out"])
+
+        banner("6. EXAMPLE OPENINGS TABLE")
+        example_openings(df, cols, CONFIG["stats_out"],
+                         n=5, seed=CONFIG["seed"])
+
+        banner("7. STATISTICAL SIGNIFICANCE TESTS")
+        significance_tests(df, cols, CONFIG["stats_out"])
 
         banner("DONE")
         return 0
